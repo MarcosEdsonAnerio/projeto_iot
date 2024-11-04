@@ -12,7 +12,7 @@ from shutil import move, rmtree
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Diretórios
-IMAGES_DIR = r"C:\Users\helya\OneDrive\Área de Trabalho\Marcos\Projeto iot\insightface-master\images"
+IMAGES_DIR = r"C:\Users\Danilo\projeto_iot\insightface-master\images"
 UNKNOWN_DIR = os.path.join(IMAGES_DIR, "unknown")
 IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 THRESHOLD = 0.6

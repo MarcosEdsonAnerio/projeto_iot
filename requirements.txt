@@ -1,3 +1,9 @@
-Cython>=0.29.28
-cmake>=3.22.3    
-numpy>=1.22.3
+torch
+torchvision
+torchaudio
+onnxruntime
+insightface
+opencv-python
+scikit-learn
+albumentations
+pandas
