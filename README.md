@@ -29,8 +29,8 @@ Este projeto foi construído com uma combinação de ferramentas de IA e bibliot
 
 ## ⚙️ Funcionalidades Principais
 
-Detecção Facial em Tempo Real: O sistema captura imagens em tempo real utilizando uma câmera conectada, detectando faces presentes na cena.
-Reconhecimento com Base em Embeddings: Ao iniciar, o sistema carrega embeddings faciais de cada aluno usando as imagens presentes na pasta images. Para cada rosto detectado, ele compara com os embeddings carregados para identificar se a pessoa é um aluno conhecido.
+1.Detecção Facial em Tempo Real: O sistema captura imagens em tempo real utilizando uma câmera conectada, detectando faces presentes na cena.
+*Reconhecimento com Base em Embeddings**: Ao iniciar, o sistema carrega embeddings faciais de cada aluno usando as imagens presentes na pasta images. Para cada rosto detectado, ele compara com os embeddings carregados para identificar se a pessoa é um aluno conhecido.
 Identificação e Exibição do Nome: Caso o rosto seja reconhecido, o nome do aluno é exibido em tempo real acima da cabeça, com uma indicação de similaridade percentual.
 Organização de Imagens Desconhecidas: Se o rosto não for identificado, a imagem é automaticamente salva na pasta unknown para verificação posterior.
 Atualização de Embeddings: O sistema permite atualizar automaticamente os embeddings de cada aluno caso novas fotos sejam adicionadas, garantindo um reconhecimento mais preciso ao longo do tempo.
