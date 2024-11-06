@@ -8,17 +8,17 @@ O objetivo deste projeto é implementar um sistema de reconhecimento facial efic
 
 Este projeto foi construído com uma combinação de ferramentas de IA e bibliotecas de visão computacional:
 
-**Python** - Linguagem principal para desenvolvimento do sistema
+*Python - Linguagem principal para desenvolvimento do sistema
 
-**OpenCV** - Processamento de imagem em tempo real
+*OpenCV - Processamento de imagem em tempo real
 
-**InsightFace** - Biblioteca para detecção e reconhecimento facial
+*InsightFace - Biblioteca para detecção e reconhecimento facial
 
-**Torch** - Framework para carregamento e execução de modelos pré-treinados de rede neural
+*Torch - Framework para carregamento e execução de modelos pré-treinados de rede neural
 
-**NumPy** - Manipulação e cálculo com arrays, para suporte ao processamento de imagens
+*NumPy - Manipulação e cálculo com arrays, para suporte ao processamento de imagens
 
-**Scikit-Learn** - Cálculo da similaridade entre embeddings faciais usando distância de cosseno
+*Scikit-Learn - Cálculo da similaridade entre embeddings faciais usando distância de cosseno
 
 ## 📐 Estrutura do Projeto
 **images** - Diretório que armazena as imagens de referência de cada indivíduo, organizadas em subpastas com o nome dos alunos.
@@ -30,19 +30,19 @@ Este projeto foi construído com uma combinação de ferramentas de IA e bibliot
 ## ⚙️ Funcionalidades Principais
 
 1.Detecção Facial em Tempo Real: O sistema captura imagens em tempo real utilizando uma câmera conectada, detectando faces presentes na cena.
-*Reconhecimento com Base em Embeddings**: Ao iniciar, o sistema carrega embeddings faciais de cada aluno usando as imagens presentes na pasta images. Para cada rosto detectado, ele compara com os embeddings carregados para identificar se a pessoa é um aluno conhecido.
-Identificação e Exibição do Nome: Caso o rosto seja reconhecido, o nome do aluno é exibido em tempo real acima da cabeça, com uma indicação de similaridade percentual.
-Organização de Imagens Desconhecidas: Se o rosto não for identificado, a imagem é automaticamente salva na pasta unknown para verificação posterior.
-Atualização de Embeddings: O sistema permite atualizar automaticamente os embeddings de cada aluno caso novas fotos sejam adicionadas, garantindo um reconhecimento mais preciso ao longo do tempo.
+2.Reconhecimento com Base em Embeddings: Ao iniciar, o sistema carrega embeddings faciais de cada aluno usando as imagens presentes na pasta images. Para cada rosto detectado, ele compara com os embeddings carregados para identificar se a pessoa é um aluno conhecido.
+3.Identificação e Exibição do Nome: Caso o rosto seja reconhecido, o nome do aluno é exibido em tempo real acima da cabeça, com uma indicação de similaridade percentual.
+4.Organização de Imagens Desconhecidas: Se o rosto não for identificado, a imagem é automaticamente salva na pasta unknown para verificação posterior.
+5.Atualização de Embeddings: O sistema permite atualizar automaticamente os embeddings de cada aluno caso novas fotos sejam adicionadas, garantindo um reconhecimento mais preciso ao longo do tempo.
 
 ## 🧪 Modelos Utilizados
 
 Para o reconhecimento facial, o projeto utiliza o modelo buffalo_l do InsightFace, com alto desempenho em precisão de reconhecimento em múltiplas condições de iluminação e ângulos.
 
 Configuração de Modelos:
-Detecção: SCRFD-10GF para detecção facial de alta precisão.
-Reconhecimento: ResNet50, treinado no WebFace600K, para gerar embeddings faciais.
-Atributos: Suporte para reconhecimento de idade e gênero.
+*Detecção: SCRFD-10GF para detecção facial de alta precisão.
+*Reconhecimento: ResNet50, treinado no WebFace600K, para gerar embeddings faciais.
+*Atributos: Suporte para reconhecimento de idade e gênero.
 Threshold de Similaridade: Ajustado para otimizar a precisão de reconhecimento com um limite mínimo de 0.65.
 
 ## ✒️ Autores
