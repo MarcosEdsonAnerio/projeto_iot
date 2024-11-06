@@ -22,7 +22,9 @@ Este projeto foi construído com uma combinação de ferramentas de IA e bibliot
 
 ## 📐 Estrutura do Projeto
 **images** - Diretório que armazena as imagens de referência de cada indivíduo, organizadas em subpastas com o nome dos alunos.
+
 **unknown** - Diretório para armazenar imagens capturadas de indivíduos não reconhecidos.
+
 **scripts** - Arquivos de código Python responsáveis pela detecção, reconhecimento e armazenamento de imagens.
 
 ## ⚙️ Funcionalidades Principais
