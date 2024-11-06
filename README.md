@@ -8,17 +8,17 @@ O objetivo deste projeto é implementar um sistema de reconhecimento facial efic
 
 Este projeto foi construído com uma combinação de ferramentas de IA e bibliotecas de visão computacional:
 
-Python - Linguagem principal para desenvolvimento do sistema
-OpenCV - Processamento de imagem em tempo real
+**Python** - Linguagem principal para desenvolvimento do sistema
+**OpenCV** - Processamento de imagem em tempo real
 InsightFace - Biblioteca para detecção e reconhecimento facial
 Torch - Framework para carregamento e execução de modelos pré-treinados de rede neural
 NumPy - Manipulação e cálculo com arrays, para suporte ao processamento de imagens
 Scikit-Learn - Cálculo da similaridade entre embeddings faciais usando distância de cosseno
 
 ## 📐 Estrutura do Projeto
-# images - Diretório que armazena as imagens de referência de cada indivíduo, organizadas em subpastas com o nome dos alunos.
-# unknown - Diretório para armazenar imagens capturadas de indivíduos não reconhecidos.
-# scripts - Arquivos de código Python responsáveis pela detecção, reconhecimento e armazenamento de imagens.
+images - Diretório que armazena as imagens de referência de cada indivíduo, organizadas em subpastas com o nome dos alunos.
+unknown - Diretório para armazenar imagens capturadas de indivíduos não reconhecidos.
+scripts - Arquivos de código Python responsáveis pela detecção, reconhecimento e armazenamento de imagens.
 
 ## ⚙️ Funcionalidades Principais
 
