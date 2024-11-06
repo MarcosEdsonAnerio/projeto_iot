@@ -12,12 +12,12 @@ Este repositório é dedicado às atividades acadêmicas da disciplina de **Prog
 Este site foi criado por Marcos Edson Anerio Dos Santos como parte das atividades da disciplina Web 2.
 
 * **Marcos Edson Anerio Dos Santos** - *Desenvolvedor* - [Marcos Edson](https://github.com/MarcosEdsonAnerio)
-* **Wester
-* **Danilo
-* **Adrian
+* **Wester Jesuino Morandi de Oliveira - *Desenvolvedor* - [Wester Jesuino](https://github.com/MarcosEdsonAnerio)
+* **Danilo Saiter da Silva - *Desenvolvedor* - [Danilo Saiter](https://github.com/MarcosEdsonAnerio)
+* **Ádrian Henrique Ferreira - *Desenvolvedor* - [Ádrian Henrique](https://github.com/MarcosEdsonAnerio)
 
-Professores responsáveis:
+Professor responsável:
 
-* **João Eujacio Teixeira Junior** - [João Eujacio](https://github.com/joaoteixeira)
+* **Wanderson Roger Azevedo Dias** - [Wanderson Roger]()
 
 ---
