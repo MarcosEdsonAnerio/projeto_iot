@@ -10,15 +10,15 @@ Este projeto foi construído com uma combinação de ferramentas de IA e bibliot
 
 **Python** - Linguagem principal para desenvolvimento do sistema
 **OpenCV** - Processamento de imagem em tempo real
-InsightFace - Biblioteca para detecção e reconhecimento facial
-Torch - Framework para carregamento e execução de modelos pré-treinados de rede neural
-NumPy - Manipulação e cálculo com arrays, para suporte ao processamento de imagens
-Scikit-Learn - Cálculo da similaridade entre embeddings faciais usando distância de cosseno
+**InsightFace** - Biblioteca para detecção e reconhecimento facial
+**Torch** - Framework para carregamento e execução de modelos pré-treinados de rede neural
+**NumPy** - Manipulação e cálculo com arrays, para suporte ao processamento de imagens
+**Scikit-Learn** - Cálculo da similaridade entre embeddings faciais usando distância de cosseno
 
 ## 📐 Estrutura do Projeto
-images - Diretório que armazena as imagens de referência de cada indivíduo, organizadas em subpastas com o nome dos alunos.
-unknown - Diretório para armazenar imagens capturadas de indivíduos não reconhecidos.
-scripts - Arquivos de código Python responsáveis pela detecção, reconhecimento e armazenamento de imagens.
+**images** - Diretório que armazena as imagens de referência de cada indivíduo, organizadas em subpastas com o nome dos alunos.
+**unknown** - Diretório para armazenar imagens capturadas de indivíduos não reconhecidos.
+**scripts** - Arquivos de código Python responsáveis pela detecção, reconhecimento e armazenamento de imagens.
 
 ## ⚙️ Funcionalidades Principais
 
@@ -43,9 +43,9 @@ Threshold de Similaridade: Ajustado para otimizar a precisão de reconhecimento 
 Este projeto foi desenvolvido como parte das atividades da disciplina de IOT pelos seguintes alunos:
 
 * **Marcos Edson Anerio Dos Santos** - *Desenvolvedor* - [Marcos Edson](https://github.com/MarcosEdsonAnerio)
-* **Wester Jesuino Morandi de Oliveira - *Desenvolvedor* - [Wester Jesuino](https://github.com/MarcosEdsonAnerio)
-* **Danilo Saiter da Silva - *Desenvolvedor* - [Danilo Saiter](https://github.com/MarcosEdsonAnerio)
-* **Ádrian Henrique Ferreira - *Desenvolvedor* - [Ádrian Henrique](https://github.com/MarcosEdsonAnerio)
+* **Wester Jesuino Morandi de Oliveira** - *Desenvolvedor* - [Wester Jesuino](https://github.com/MarcosEdsonAnerio)
+* **Danilo Saiter da Silva** - *Desenvolvedor* - [Danilo Saiter](https://github.com/MarcosEdsonAnerio)
+* **Ádrian Henrique Ferreira** - *Desenvolvedor* - [Ádrian Henrique](https://github.com/MarcosEdsonAnerio)
 
 Professor responsável:
 
