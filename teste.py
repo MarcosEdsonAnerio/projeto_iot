@@ -16,7 +16,7 @@ IMAGES_DIR = r"C:\Users\helya\OneDrive\Área de Trabalho\Marcos\Projeto iot\Test
 UNKNOWN_DIR = os.path.join(IMAGES_DIR, "unknown")
 IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 THRESHOLD = 0.6
-SIMILARITY_THRESHOLD = 0.5  # 50% de similaridade para excluir
+SIMILARITY_THRESHOLD = 0.5 # 50% de similaridade para excluir
 
 # Verificar dispositivo (GPU ou CPU) disponível
 def get_device():
@@ -46,7 +46,7 @@ def initialize_face_model():
 # Inicializar o modelo YOLOv5 para detecção de roupas e acessórios
 def initialize_yolo_model():
     model = torch.hub.load("ultralytics/yolov5", "yolov5s", pretrained=True)
-    model.to(DEVICE)  # Certifique-se de que o modelo está na GPU
+    model.to(DEVICE) # Certifique-se de que o modelo está na GPU
     logging.info(f"Modelo YOLOv5 carregado no dispositivo: {DEVICE}")
     return model
 
@@ -76,16 +76,15 @@ def load_reference_embeddings(directory, face_app):
     logging.info("Embeddings carregados.")
     return embeddings
 
-# Função para salvar a imagem em uma pasta (unknown ou aluno correspondente)
-def save_image_in_folder(frame, folder_name, aluno_name=None):
-    folder_path = os.path.join(folder_name, aluno_name) if aluno_name else folder_name
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
+# Função para salvar a imagem na pasta "unknown"
+def save_image_in_folder(frame, folder_name):
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     image_filename = f"captured_{timestamp}.jpg"
-    image_path = os.path.join(folder_path, image_filename)
+    image_path = os.path.join(folder_name, image_filename)
     cv2.imwrite(image_path, frame)
-    logging.info(f"Imagem salva em {folder_path} como {image_filename}")
+    logging.info(f"Imagem salva em {folder_name} como {image_filename}")
 
 # Função para identificar múltiplos rostos e evitar exclusões incorretas
 def identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddings, threshold=THRESHOLD):
@@ -114,11 +113,10 @@ def identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddi
         if best_similarity >= threshold:
             label = f"Identificado: {best_aluno} - Similaridade: {best_similarity:.2f}"
             cv2.putText(frame, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            save_image_in_folder(frame, IMAGES_DIR, best_aluno)
         else:
             label = f"Desconhecido - Similaridade: {best_similarity:.2f}"
             cv2.putText(frame, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-            save_image_in_folder(frame, UNKNOWN_DIR)
+            save_image_in_folder(frame, UNKNOWN_DIR) # Salva somente na pasta 'unknown'
 
 # Função para normalizar iluminação da imagem
 def normalize_lighting(image):
