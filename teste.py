@@ -9,14 +9,26 @@ from insightface.app import FaceAnalysis
 from shutil import move, rmtree
 
 # Configuração de logging para monitorar operações
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Diretórios
-IMAGES_DIR = r"C:\Users\Danilo\projeto_iot\insightface-master\images"
+IMAGES_DIR = r"C:\Users\helya\OneDrive\Área de Trabalho\Marcos\Projeto iot\Teste3\projeto_iot\images"
 UNKNOWN_DIR = os.path.join(IMAGES_DIR, "unknown")
 IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 THRESHOLD = 0.6
 SIMILARITY_THRESHOLD = 0.5  # 50% de similaridade para excluir
+
+# Verificar dispositivo (GPU ou CPU) disponível
+def get_device():
+    if torch.cuda.is_available():
+        logging.info("GPU disponível. Utilizando GPU.")
+        return torch.device("cuda")
+    else:
+        logging.info("Nenhuma GPU disponível. Utilizando CPU.")
+        return torch.device("cpu")
+
+# Definir dispositivo global
+DEVICE = get_device()
 
 # Configurações iniciais
 def initialize_directories():
@@ -27,12 +39,16 @@ def initialize_directories():
 # Inicializar o modelo de reconhecimento facial InsightFace
 def initialize_face_model():
     app = FaceAnalysis(name="buffalo_l")
-    app.prepare(ctx_id=0, det_size=(640, 640))
+    app.prepare(ctx_id=0 if DEVICE.type == "cuda" else -1, det_size=(640, 640))
+    logging.info(f"Modelo de reconhecimento facial carregado no dispositivo: {DEVICE}")
     return app
 
 # Inicializar o modelo YOLOv5 para detecção de roupas e acessórios
 def initialize_yolo_model():
-    return torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+    model = torch.hub.load("ultralytics/yolov5", "yolov5s", pretrained=True)
+    model.to(DEVICE)  # Certifique-se de que o modelo está na GPU
+    logging.info(f"Modelo YOLOv5 carregado no dispositivo: {DEVICE}")
+    return model
 
 # Função para calcular a similaridade cosseno
 def cos_sim(embedding1, embedding2):
@@ -41,32 +57,22 @@ def cos_sim(embedding1, embedding2):
 # Função para carregar embeddings das imagens dos alunos na pasta "images"
 def load_reference_embeddings(directory, face_app):
     embeddings = {}
-    
-    # Percorrer as subpastas da pasta 'images' onde cada subpasta é o nome do aluno
     for aluno_folder in os.listdir(directory):
         aluno_folder_path = os.path.join(directory, aluno_folder)
-        
-        if os.path.isdir(aluno_folder_path):  # Verificar se é uma subpasta
-            embeddings[aluno_folder] = []  # Inicializar a lista de embeddings para o aluno
-            
-            # Carregar todas as imagens da subpasta do aluno
+        if os.path.isdir(aluno_folder_path):
+            embeddings[aluno_folder] = []
             for img_file in os.listdir(aluno_folder_path):
                 img_path = os.path.join(aluno_folder_path, img_file)
-                
                 if img_file.lower().endswith(IMAGE_EXTENSIONS):
                     image = cv2.imread(img_path)
                     if image is None:
                         continue
-                    
                     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                     faces = face_app.get(image_rgb)
                     if len(faces) == 0:
                         continue
-                    
-                    # Obter o embedding da primeira face detectada
                     face_embedding = faces[0].embedding
-                    embeddings[aluno_folder].append(face_embedding)  # Adicionar embedding ao aluno
-                    
+                    embeddings[aluno_folder].append(face_embedding)
     logging.info("Embeddings carregados.")
     return embeddings
 
@@ -86,20 +92,18 @@ def identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddi
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     faces = face_app.get(rgb_frame)
 
-    current_faces = []  # Armazena os rostos processados
+    current_faces = []
 
     for face in faces:
         bbox = face.bbox.astype(int)
         cv2.rectangle(frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
 
         live_embedding = face.embedding
-        current_faces.append((face, live_embedding))  # Adiciona o rosto e o embedding à lista
+        current_faces.append((face, live_embedding))
 
-        # Analisar com embeddings de referência
         best_similarity = 0
         best_aluno = None
 
-        # Verificar todos os alunos registrados para encontrar a melhor correspondência
         for aluno, ref_embeddings in reference_embeddings.items():
             for ref_embedding in ref_embeddings:
                 similarity = cos_sim(ref_embedding, live_embedding)
@@ -107,21 +111,17 @@ def identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddi
                     best_similarity = similarity
                     best_aluno = aluno
 
-        # Verificar se o aluno já é conhecido
         if best_similarity >= threshold:
             label = f"Identificado: {best_aluno} - Similaridade: {best_similarity:.2f}"
             cv2.putText(frame, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            # Atualizar os embeddings para lidar com mudanças no rosto
             save_image_in_folder(frame, IMAGES_DIR, best_aluno)
         else:
             label = f"Desconhecido - Similaridade: {best_similarity:.2f}"
             cv2.putText(frame, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-            # Salvar na pasta unknown
             save_image_in_folder(frame, UNKNOWN_DIR)
 
 # Função para normalizar iluminação da imagem
 def normalize_lighting(image):
-    """Normaliza a iluminação da imagem usando equalização de histograma."""
     image_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
     image_yuv[:, :, 0] = cv2.equalizeHist(image_yuv[:, :, 0])
     image_normalized = cv2.cvtColor(image_yuv, cv2.COLOR_YUV2BGR)
@@ -133,7 +133,6 @@ def main():
     face_app = initialize_face_model()
     yolo_model = initialize_yolo_model()
 
-    # Carregar embeddings existentes das subpastas em "images"
     reference_embeddings = load_reference_embeddings(IMAGES_DIR, face_app)
 
     cap = cv2.VideoCapture(0)
@@ -143,14 +142,11 @@ def main():
         if not ret:
             break
 
-        # Normalizar iluminação da imagem
         frame = normalize_lighting(frame)
-
-        # Identificar e verificar duplicatas
         identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddings)
 
         cv2.imshow("Verificação Multimodal de Indivíduos", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     cap.release()
