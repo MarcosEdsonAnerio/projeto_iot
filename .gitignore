@@ -1,1 +1,122 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Diretórios do sistema
+.DS_Store
+Thumbs.db
+
+# Ambientes Node.js
+node_modules/
+dist/
+build/
+.tmp/
+.nyc_output/
+coverage/
+lib-cov/
+
+# Ambientes Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
 venv/
+ENV/
+*.env
+*.venv
+
+# Ambientes Java
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.gradle/
+build/
+target/
+
+# Ambientes C#
+*.dll
+*.exe
+*.pdb
+*.user
+*.cache
+*.csproj.user
+.vscode/
+*.suo
+*.idb
+*.opendb
+obj/
+bin/
+
+# Ambientes React
+build/
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+.env
+
+# Ambientes Angular
+.angular/
+.angular-cache/
+*.ng_build
+*.ng_prod
+
+# Ambientes PHP
+vendor/
+
+# Ambientes Laravel
+node_modules/
+public/storage
+storage/*.key
+.env
+Homestead.yaml
+Homestead.json
+
+# Ambientes Ruby
+*.gem
+*.rbc
+.bundle/
+vendor/bundle/
+.log
+
+# Ambientes IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Arquivos temporários do sistema operacional
+*.swp
+*~
+*.bak
+*.tmp
+*.old
+*.orig
+
+# Arquivos de compilação do Linux/Mac
+*.out
+*.o
+*.d
+*.so
+
+# Arquivos de backup
+*.bak
+*.backup
+*.old
+*.save
+
+# Outros exemplos gerais
+*.sqlite3
+*.lock
+*.tfstate
+*.override.tf
+*.tar
+*.gz
+*.zip
+*.tgz

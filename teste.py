@@ -3,6 +3,7 @@ import cv2
 import torch
 import numpy as np
 import logging
+from ultralytics import YOLO
 from datetime import datetime
 from sklearn.metrics.pairwise import cosine_similarity
 from insightface.app import FaceAnalysis
@@ -15,8 +16,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 IMAGES_DIR = r"C:\Users\helya\OneDrive\Área de Trabalho\Marcos\Projeto iot\Teste3\projeto_iot\images"
 UNKNOWN_DIR = os.path.join(IMAGES_DIR, "unknown")
 IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
-THRESHOLD = 0.6
-SIMILARITY_THRESHOLD = 0.5 # 50% de similaridade para excluir
+THRESHOLD = 0.6  # Limite mínimo de similaridade para identificar
+SIMILARITY_THRESHOLD = 0.5  # Limite de similaridade para determinar "Desconhecido"
 
 # Verificar dispositivo (GPU ou CPU) disponível
 def get_device():
@@ -45,9 +46,9 @@ def initialize_face_model():
 
 # Inicializar o modelo YOLOv5 para detecção de roupas e acessórios
 def initialize_yolo_model():
-    model = torch.hub.load("ultralytics/yolov5", "yolov5s", pretrained=True)
-    model.to(DEVICE) # Certifique-se de que o modelo está na GPU
-    logging.info(f"Modelo YOLOv5 carregado no dispositivo: {DEVICE}")
+    model = YOLO("yolo11x.pt")
+    model.to(DEVICE)
+    logging.info(f"Modelo YOLOv8x carregado no dispositivo: {DEVICE}")
     return model
 
 # Função para calcular a similaridade cosseno
@@ -86,7 +87,7 @@ def save_image_in_folder(frame, folder_name):
     cv2.imwrite(image_path, frame)
     logging.info(f"Imagem salva em {folder_name} como {image_filename}")
 
-# Função para identificar múltiplos rostos e evitar exclusões incorretas
+# Função para identificar múltiplos rostos e exibir as informações de identificação
 def identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddings, threshold=THRESHOLD):
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     faces = face_app.get(rgb_frame)
@@ -103,6 +104,7 @@ def identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddi
         best_similarity = 0
         best_aluno = None
 
+        # Comparar a face detectada com as faces de referência
         for aluno, ref_embeddings in reference_embeddings.items():
             for ref_embedding in ref_embeddings:
                 similarity = cos_sim(ref_embedding, live_embedding)
@@ -110,20 +112,24 @@ def identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddi
                     best_similarity = similarity
                     best_aluno = aluno
 
+        # Identificar a pessoa com a maior similaridade
         if best_similarity >= threshold:
-            label = f"Identificado: {best_aluno} - Similaridade: {best_similarity:.2f}"
-            cv2.putText(frame, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            line1 = f"Identificado: {best_aluno}"
+            line2 = f"Similaridade: {best_similarity:.2f}"
+            # Adiciona a primeira linha (nome do aluno)
+            cv2.putText(frame, line1, (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            # Adiciona a segunda linha (similaridade)
+            cv2.putText(frame, line2, (bbox[0], bbox[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         else:
-            label = f"Desconhecido - Similaridade: {best_similarity:.2f}"
-            cv2.putText(frame, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-            save_image_in_folder(frame, UNKNOWN_DIR) # Salva somente na pasta 'unknown'
+            line1 = "Desconhecido"
+            line2 = f"Similaridade: {best_similarity:.2f}"
+            # Adiciona a primeira linha (Desconhecido)
+            cv2.putText(frame, line1, (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            # Adiciona a segunda linha (similaridade)
+            cv2.putText(frame, line2, (bbox[0], bbox[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            save_image_in_folder(frame, UNKNOWN_DIR)  # Salva a imagem na pasta 'unknown'
 
-# Função para normalizar iluminação da imagem
-def normalize_lighting(image):
-    image_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
-    image_yuv[:, :, 0] = cv2.equalizeHist(image_yuv[:, :, 0])
-    image_normalized = cv2.cvtColor(image_yuv, cv2.COLOR_YUV2BGR)
-    return image_normalized
+    return frame
 
 # Inicialização do sistema
 def main():
@@ -131,17 +137,18 @@ def main():
     face_app = initialize_face_model()
     yolo_model = initialize_yolo_model()
 
+    # Carregar embeddings dos alunos da pasta 'images'
     reference_embeddings = load_reference_embeddings(IMAGES_DIR, face_app)
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)  # Usar 0 para a câmera padrão
 
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        frame = normalize_lighting(frame)
-        identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddings)
+        # Processar cada frame para identificar os rostos e adicionar os nomes
+        frame = identify_and_check_duplicates(frame, face_app, yolo_model, reference_embeddings)
 
         cv2.imshow("Verificação Multimodal de Indivíduos", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):

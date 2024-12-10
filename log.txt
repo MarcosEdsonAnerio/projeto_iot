@@ -1,0 +1,14 @@
+2024-11-25 21:30:58,766 - INFO - Dispositivo em uso: CPU
+2024-11-25 21:31:01,051 - INFO - Modelo de reconhecimento facial inicializado com sucesso.
+2024-11-25 21:31:01,052 - INFO - 0 embeddings carregados do diretório C:\Users\helya\OneDrive\Área de Trabalho\Marcos\Projeto iot\Teste3\projeto_iot\images.
+2024-11-25 21:31:01,052 - INFO - Tempo para load_reference_embeddings: 0.00 segundos.
+2024-11-25 21:31:34,228 - INFO - Dispositivo em uso: CPU
+2024-11-25 21:31:36,267 - INFO - Modelo de reconhecimento facial inicializado com sucesso.
+2024-11-25 21:31:36,273 - INFO - 0 embeddings carregados do diretório C:\Users\helya\OneDrive\Área de Trabalho\Marcos\Projeto iot\Teste3\projeto_iot\images.
+2024-11-25 21:31:36,273 - INFO - Tempo para load_reference_embeddings: 0.00 segundos.
+2024-11-25 21:31:36,285 - INFO - Tempo para cleanup_directory: 0.00 segundos.
+2024-11-25 21:31:50,385 - INFO - Dispositivo em uso: CPU
+2024-11-25 21:31:52,564 - INFO - Modelo de reconhecimento facial inicializado com sucesso.
+2024-11-25 21:31:52,564 - INFO - 0 embeddings carregados do diretório C:\Users\helya\OneDrive\Área de Trabalho\Marcos\Projeto iot\Teste3\projeto_iot\images.
+2024-11-25 21:31:52,564 - INFO - Tempo para load_reference_embeddings: 0.00 segundos.
+2024-11-25 21:31:52,564 - INFO - Tempo para cleanup_directory: 0.00 segundos.
