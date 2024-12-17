@@ -6,4 +6,4 @@ torch
 ultralytics
 scikit-learn
 insightface
-shutil
+request 
