@@ -120,3 +120,4 @@ vendor/bundle/
 *.gz
 *.zip
 *.tgz
+images/
