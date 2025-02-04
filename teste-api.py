@@ -11,26 +11,46 @@ from ultralytics import YOLO
 from insightface.app import FaceAnalysis
 from sklearn.metrics.pairwise import cosine_similarity
 from shutil import move
-from jose import jwt  # Para autenticação JWT
-import numpy as np  # Garante que NumPy está disponível como 'np'
+from jose import jwt
+import numpy as np
 
 # Configuração de logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 # Configurações principais
-BASE_URL = "http://192.168.100.160:3000/ensino/turma/a31551e7-1017-4a53-9235-6d7860083aed/alunos-fotos"
-JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6IkFkbWluaXN0cmFkb3IiLCJyb2xlIjoiYWRtaW4iLCJzdWIiOiJjODc3YjFjYy1mMjNlLTQwY2EtYjhlNy1lY2Y4YjA4YjJkZDYiLCJwbGF0Zm9ybSI6IndlYiIsImlhdCI6MTczNDM5NDQ3MywiZXhwIjoxNzM0Mzk4MDczfQ.py4EYg1C2GJCgCetmc_fW9xE_SelLMXYYILQNH9cwD4"
+BASE_URL = "http://192.168.61.160:3000/ensino/turma/4614f88d-701f-43f3-b099-d0562a5cae6e/alunos-fotos"
+JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6IkFkbWluaXN0cmFkb3IiLCJyb2xlIjoiYWRtaW4iLCJzdWIiOiJjODc3YjFjYy1mMjNlLTQwY2EtYjhlNy1lY2Y4YjA4YjJkZDYiLCJwbGF0Zm9ybSI6IndlYiIsImlhdCI6MTczODYyOTI1MiwiZXhwIjoxNzM4NjMyODUyfQ.u5HI8hvJvVNAJNTGU6b_Y4l-4cXk62L_MTkiarxvA8Y"
 HEADERS = {"Authorization": f"Bearer {JWT_TOKEN}"}
 IMAGES_DIR = r"./images"
 UNKNOWN_DIR = os.path.join(IMAGES_DIR, "unknown")
-THRESHOLD = 0.6  # Similaridade mínima
+THRESHOLD = 0.6
 FRAME_SKIP = 3
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+# Inicialização de câmera
+def initialize_camera():
+    cap = cv2.VideoCapture(1)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 300)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 300)
+    cap.set(cv2.CAP_PROP_FPS, 120)
+    return cap
+
+    # ip_webcam_url = "http://192.168.61.242:8889/video"
+    # cap = cv2.VideoCapture(ip_webcam_url)
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 300)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 300)
+    # cap.set(cv2.CAP_PROP_FPS, 60)
+    # return cap
+
 
 # Inicialização de diretórios
 def initialize_directories():
     os.makedirs(UNKNOWN_DIR, exist_ok=True)
     logging.info(f"Diretórios verificados: {IMAGES_DIR}, {UNKNOWN_DIR}")
+
 
 # Inicializar modelos
 def initialize_face_model():
@@ -38,10 +58,12 @@ def initialize_face_model():
     app.prepare(ctx_id=0 if DEVICE.type == "cuda" else -1, det_size=(640, 640))
     return app
 
+
 def initialize_yolo_model():
     model = YOLO("yolov8n.pt")
     model.to(DEVICE)
     return model
+
 
 # Função para buscar fotos
 def fetch_aluno_photos():
@@ -51,12 +73,12 @@ def fetch_aluno_photos():
         if response.status_code == 200:
             alunos = response.json()
             for aluno in alunos:
-                aluno_id = aluno["id"]
+                matricula_id = aluno["matricula_id"]
                 aluno_nome = aluno["pessoa"]["nome"].replace(" ", "_")
                 foto_url = aluno["pessoa"].get("foto")
 
                 # Criar pasta do aluno
-                aluno_pasta = os.path.join(IMAGES_DIR, f"{aluno_nome}_{aluno_id}")
+                aluno_pasta = os.path.join(IMAGES_DIR, f"{matricula_id}")
                 os.makedirs(aluno_pasta, exist_ok=True)
 
                 # Baixar foto se existir
@@ -66,6 +88,7 @@ def fetch_aluno_photos():
             logging.error(f"Erro ao buscar fotos: {response.status_code}")
     except Exception as e:
         logging.error(f"Erro ao buscar fotos: {e}")
+
 
 # Função para baixar uma foto
 def baixar_foto(url, pasta):
@@ -87,12 +110,19 @@ def baixar_foto(url, pasta):
     except Exception as e:
         logging.error(f"Erro ao baixar foto {url}: {e}")
 
+
 # Função auxiliar para manter apenas as últimas 'limite' fotos na pasta
 def manter_ultimas_fotos(pasta, limite=5):
     try:
         # Listar todas as fotos da pasta
-        arquivos = [os.path.join(pasta, f) for f in os.listdir(pasta) if f.endswith(('.jpg', '.jpeg', '.png'))]
-        arquivos.sort(key=os.path.getmtime, reverse=True)  # Ordena pelo tempo de modificação (mais recente primeiro)
+        arquivos = [
+            os.path.join(pasta, f)
+            for f in os.listdir(pasta)
+            if f.endswith((".jpg", ".jpeg", ".png"))
+        ]
+        arquivos.sort(
+            key=os.path.getmtime, reverse=True
+        )  # Ordena pelo tempo de modificação (mais recente primeiro)
 
         # Deletar arquivos além do limite
         if len(arquivos) > limite:
@@ -102,6 +132,7 @@ def manter_ultimas_fotos(pasta, limite=5):
 
     except Exception as e:
         logging.error(f"Erro ao manter últimas fotos na pasta {pasta}: {e}")
+
 
 # Carregar embeddings das imagens dos alunos
 def load_reference_embeddings(directory, face_app):
@@ -122,6 +153,21 @@ def load_reference_embeddings(directory, face_app):
     logging.info("Embeddings carregados.")
     return embeddings
 
+
+# Função para enviar requisição HTTP quando um aluno for identificado
+def send_identification_request(aluno_nome):
+    try:
+        response = requests.post(BASE_URL, headers=HEADERS, json={"aluno": aluno_nome})
+        if response.status_code == 200:
+            logging.info(f"Requisição enviada com sucesso para {aluno_nome}")
+        else:
+            logging.error(
+                f"Erro ao enviar requisição para {aluno_nome}: {response.status_code}"
+            )
+    except Exception as e:
+        logging.error(f"Erro ao enviar requisição para {aluno_nome}: {e}")
+
+
 # Processamento de cada frame
 def process_frame(frame, face_app, reference_embeddings):
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -132,35 +178,81 @@ def process_frame(frame, face_app, reference_embeddings):
 
         best_similarity = 0
         best_aluno = "Desconhecido"
+        best_matricula = None
 
         # Validar o embedding da face detectada
         if live_embedding is not None and len(live_embedding) > 0:
             for aluno, ref_embeddings in reference_embeddings.items():
                 # Verificar se ref_embeddings não está vazio
-                if ref_embeddings and all(isinstance(e, np.ndarray) and len(e) > 0 for e in ref_embeddings):
+                if ref_embeddings and all(
+                    isinstance(e, np.ndarray) and len(e) > 0 for e in ref_embeddings
+                ):
                     try:
-                        ref_embeddings_array = np.vstack(ref_embeddings)  # Garante que é 2D
-                        similarity = max(cosine_similarity([live_embedding], ref_embeddings_array)[0])
+                        ref_embeddings_array = np.vstack(
+                            ref_embeddings
+                        )  # Garante que é 2D
+                        similarity = max(
+                            cosine_similarity([live_embedding], ref_embeddings_array)[0]
+                        )
                         if similarity > best_similarity:
                             best_similarity = similarity
                             best_aluno = aluno
+                            # Extrair matrícula do nome da pasta
+                            best_matricula = aluno.split("_")[-1]
                     except ValueError as e:
-                        logging.error(f"Erro ao calcular similaridade para {aluno}: {e}")
+                        logging.error(
+                            f"Erro ao calcular similaridade para {aluno}: {e}"
+                        )
                         continue
 
         # Adicionar texto e retângulo no frame
         color = (0, 255, 0) if best_similarity >= THRESHOLD else (0, 0, 255)
         label = f"{best_aluno}" if best_similarity >= THRESHOLD else "Desconhecido"
         cv2.rectangle(frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, 2)
-        cv2.putText(frame, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+        cv2.putText(
+            frame,
+            label,
+            (bbox[0], bbox[1] - 10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.9,
+            color,
+            2,
+        )
+
+        # Enviar requisição HTTP se um aluno for identificado
+        if best_similarity >= THRESHOLD and best_matricula:
+            url = "http://192.168.61.160:3000/ensino/diario/aulas/frequencia"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6IkFkbWluaXN0cmFkb3IiLCJyb2xlIjoiYWRtaW4iLCJzdWIiOiJjODc3YjFjYy1mMjNlLTQwY2EtYjhlNy1lY2Y4YjA4YjJkZDYiLCJwbGF0Zm9ybSI6IndlYiIsImlhdCI6MTczODYyOTI1MiwiZXhwIjoxNzM4NjMyODUyfQ.u5HI8hvJvVNAJNTGU6b_Y4l-4cXk62L_MTkiarxvA8Y",
+            }
+            data = {
+                "aulas": [
+                    {
+                        "aula": {"id": "0446c265-7c8b-43e7-95df-0ce1023fad77"},
+                        "matricula": {"id": best_matricula},
+                        "frequencia": "P",
+                    }
+                ]
+            }
+            response = requests.post(url, headers=headers, json=data)
+            if response.status_code == 200:
+                logging.info(f"Requisição enviada com sucesso para {best_aluno}")
+            else:
+                logging.error(
+                    f"Erro ao enviar requisição para {best_aluno}: {response.status_code}"
+                )
 
     return frame
+
+
 # Função agendada para buscar fotos a cada 12 horas
 def schedule_fetch_photos():
     while True:
         fetch_aluno_photos()
         logging.info("Aguardando 12 horas para nova busca...")
         time.sleep(12 * 3600)
+
 
 # Main
 def main():
@@ -170,9 +262,7 @@ def main():
 
     threading.Thread(target=schedule_fetch_photos, daemon=True).start()
 
-    cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap = initialize_camera()
 
     executor = ThreadPoolExecutor(max_workers=2)
     frame_count = 0
@@ -196,6 +286,7 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     main()

@@ -6,4 +6,6 @@ torch
 ultralytics
 scikit-learn
 insightface
-request 
+requests
+onnxruntime
+python-jose
