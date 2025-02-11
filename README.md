@@ -16,9 +16,22 @@ Para instalar o projeto, siga os passos abaixo:
    ```bash
    cd projeto_iot
    ```
-3. Instale as dependências:
+3. Crie um ambiente virtual:
    ```bash
-   npm install
+   python -m venv venv
+   ```
+4. Ative o ambiente virtual:
+   - No Windows:
+     ```bash
+     venv\Scripts\activate
+     ```
+   - No Linux/MacOS:
+     ```bash
+     source venv/bin/activate
+     ```
+5. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
    ```
 
 ## Uso
@@ -26,7 +39,7 @@ Para instalar o projeto, siga os passos abaixo:
 Para iniciar a aplicação, execute o comando:
 
 ```bash
-npm start
+python main.py
 ```
 
 A aplicação estará disponível em `http://localhost:3000`.
