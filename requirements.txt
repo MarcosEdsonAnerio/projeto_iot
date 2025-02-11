@@ -1,11 +1,9 @@
-#COMO INSTALAR: pip install -r requirements.txt
-#LINUX: pip3 install -r requirements.txt
-
 opencv-python
 torch
-ultralytics
-scikit-learn
-insightface
 requests
-onnxruntime
+ultralytics
+insightface
 python-jose
+numpy
+python-dotenv
+scikit-learn
